@@ -114,16 +114,26 @@ function NBATriviaApp() {
   const [score, setScore] = useState(0);
   const [showFact, setShowFact] = useState("");
   const [isFinished, setIsFinished] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [isCorrect, setIsCorrect] = useState(null);
 
   const handleAnswer = (option) => {
-    if (option === triviaData[current].answer) {
+    setSelectedOption(option);
+    const correct = option === triviaData[current].answer;
+    setIsCorrect(correct);
+
+    if (correct) {
       setScore(score + 1);
       setShowFact(triviaData[current].fact);
     } else {
       setShowFact("");
     }
+
     setTimeout(() => {
       setShowFact("");
+      setSelectedOption("");
+      setIsCorrect(null);
+
       if (current + 1 < triviaData.length) {
         setCurrent(current + 1);
       } else {
@@ -140,6 +150,8 @@ function NBATriviaApp() {
     setScore(0);
     setShowFact("");
     setIsFinished(false);
+    setSelectedOption("");
+    setIsCorrect(null);
   };
 
   return (
@@ -186,9 +198,22 @@ function NBATriviaApp() {
               <button
                 key={option}
                 onClick={() => handleAnswer(option)}
-                className="option"
+                className={`option flex items-center justify-between border p-2 rounded ${
+                  selectedOption === option &&
+                  !isCorrect &&
+                  option === selectedOption
+                    ? "border-red-500"
+                    : ""
+                }`}
+                disabled={!!selectedOption}
               >
-                {option}
+                <span>{option}</span>
+                {/* Show ❌ if wrong */}
+                {selectedOption === option &&
+                  !isCorrect &&
+                  option === selectedOption && (
+                    <span className="text-red-500 ml-2">❌</span>
+                  )}
               </button>
             ))}
           </div>
